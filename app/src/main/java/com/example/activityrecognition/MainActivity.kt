@@ -5,8 +5,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -14,6 +16,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.gms.location.DetectedActivity
+import pl.droidsonroids.gif.GifImageView
 
 class MainActivity : AppCompatActivity() {
 
@@ -22,6 +25,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var txtActivity: TextView
     private lateinit var txtConfidence: TextView
+    private lateinit var activityGif: GifImageView
     private lateinit var btnStartTrcking: Button
     private lateinit var btnStopTracking: Button
 
@@ -31,6 +35,7 @@ class MainActivity : AppCompatActivity() {
 
         txtActivity = findViewById(R.id.txt_activity)
         txtConfidence = findViewById(R.id.txt_confidence)
+        activityGif = findViewById(R.id.activitygif)
         btnStartTrcking = findViewById(R.id.btn_start_tracking)
         btnStopTracking = findViewById(R.id.btn_stop_tracking)
         requestActivityRecognitionPermission()
@@ -55,35 +60,50 @@ class MainActivity : AppCompatActivity() {
         var label = getString(R.string.activity_unknown)
 
         when (type) {
-            DetectedActivity.IN_VEHICLE -> {
-                label = "You are in Vehicle"
-            }
-            DetectedActivity.ON_BICYCLE -> {
-                label = "You are on Bicycle"
-            }
-            DetectedActivity.ON_FOOT -> {
-                label = "You are on Foot"
-            }
+//            DetectedActivity.IN_VEHICLE -> {
+//                label = "You are in Vehicle"
+//            }
+//            DetectedActivity.ON_BICYCLE -> {
+//                label = "You are on Bicycle"
+//            }
+//            DetectedActivity.ON_FOOT -> {
+//                label = "You are on Foot"
+//            }
             DetectedActivity.RUNNING -> {
                 label = "You are Running"
             }
             DetectedActivity.STILL -> {
                 label = "You are Still"
             }
-            DetectedActivity.TILTING -> {
-                label = "Your phone is Tilted"
-            }
+//            DetectedActivity.TILTING -> {
+//                label = "Your phone is Tilted"
+//            }
             DetectedActivity.WALKING -> {
                 label = "You are Walking"
             }
-            DetectedActivity.UNKNOWN -> {
-                label = "Unkown Activity"
-            }
+//            DetectedActivity.UNKNOWN -> {
+//                label = "Unkown Activity"
+//            }
         }
 
         Log.e(TAG, "User activity: $label, Confidence: $confidence")
 
-        if (confidence > MainActivity.CONFIDENCE) {
+        if (confidence > MainActivity.CONFIDENCE && label != "Unknown") {
+            activityGif.visibility = View.INVISIBLE
+            when(type) {
+                DetectedActivity.RUNNING -> {
+                    activityGif.setImageResource(R.drawable.run)
+                    activityGif.visibility = View.VISIBLE
+                }
+                DetectedActivity.STILL -> {
+                    activityGif.setImageResource(R.drawable.standing)
+                    activityGif.visibility = View.VISIBLE
+                }
+                DetectedActivity.WALKING -> {
+                    activityGif.setImageResource(R.drawable.walk)
+                    activityGif.visibility = View.VISIBLE
+                }
+            }
             txtActivity?.text = label
             txtConfidence?.text = "Confidence: $confidence"
         }
@@ -119,7 +139,7 @@ class MainActivity : AppCompatActivity() {
 
         val BROADCAST_DETECTED_ACTIVITY = "activity_intent"
 
-        internal val DETECTION_INTERVAL_IN_MILLISECONDS: Long = 1000
+        internal val DETECTION_INTERVAL_IN_MILLISECONDS: Long = 5000
 
         val CONFIDENCE = 70
     }
