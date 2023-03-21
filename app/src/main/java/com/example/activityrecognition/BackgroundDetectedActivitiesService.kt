@@ -1,22 +1,30 @@
 package com.example.activityrecognition
 
-import android.app.PendingIntent
+
 import android.app.Service
 import android.content.Intent
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.os.Binder
+import android.os.Handler
 import android.os.IBinder
 import android.util.Log
 import android.widget.Toast
-import com.google.android.gms.location.ActivityRecognitionClient
-import com.google.android.gms.tasks.Task
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import kotlin.math.sqrt
+
 
 @Suppress("DEPRECATION", "UNREACHABLE_CODE")
-class BackgroundDetectedActivitiesService :Service() {
+class BackgroundDetectedActivitiesService :Service(), SensorEventListener {
 
-    lateinit var intentService: Intent
-    lateinit var activityRecognitionClient: ActivityRecognitionClient
-    lateinit var mPendingIntent:PendingIntent
+    private var sensorReading:Float = 0f
+    private var handler = Handler()
 
+    var handlerBool : Boolean = false
+    lateinit var mSensorManager: SensorManager
+    lateinit var mAccelerometer: Sensor
     inner class MyBinder : Binder() {
         fun getService() : BackgroundDetectedActivitiesService? {
             return this@BackgroundDetectedActivitiesService
@@ -26,16 +34,13 @@ class BackgroundDetectedActivitiesService :Service() {
     override fun onCreate() {
         super.onCreate()
         Log.d("BDAS","created")
-        activityRecognitionClient = ActivityRecognitionClient(this)
-        intentService = Intent(this, DetectedActivitiesIntentService::class.java)
-        mPendingIntent = PendingIntent.getService(
-            this,
-            1,
-            intentService,
-            PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
+        mSensorManager = applicationContext.getSystemService(SENSOR_SERVICE) as SensorManager
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         requestActivityUpdatesButtonHandler()
+        handlerBool = true
+        broadcastActivity()
+
+
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -46,50 +51,57 @@ class BackgroundDetectedActivitiesService :Service() {
     override fun onBind(p0: Intent?): IBinder = MyBinder()
 
     private fun requestActivityUpdatesButtonHandler() {
-        val task: Task<Void> = activityRecognitionClient.requestActivityUpdates(
-            MainActivity.DETECTION_INTERVAL_IN_MILLISECONDS,
-            mPendingIntent)
-        task.addOnSuccessListener {
-            Toast.makeText(
-                applicationContext,
-                "Successfully requested activity updates",
-                Toast.LENGTH_SHORT
-            )
-                .show()
-        }
-        task.addOnFailureListener {
-            Toast.makeText(
-                applicationContext,
-                "Requesting activity updates failed to start",
-                Toast.LENGTH_SHORT
-            )
-                .show()
-        }
+
+        mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL)
+        Toast.makeText(
+            applicationContext,
+            "Successfully requested activity updates",
+            Toast.LENGTH_SHORT
+        )
+            .show()
     }
 
     private fun removeActivityUpdatesButtonHandler() {
-        val task: Task<Void> = activityRecognitionClient.removeActivityUpdates(
-            mPendingIntent)
-
-        task.addOnSuccessListener {
-            Toast.makeText(
-                applicationContext,
-                "Removed activity updates successfully!",
-                Toast.LENGTH_SHORT
-            )
-                .show()
-        }
-        task.addOnFailureListener {
-            Toast.makeText(
-                applicationContext, "Failed to remove activity updates!",
-                Toast.LENGTH_SHORT
-            ).show()
-        }
+        mSensorManager.unregisterListener(this)
+        handlerBool = false
+        Toast.makeText(
+            applicationContext,
+            "Removed activity updates successfully!",
+            Toast.LENGTH_SHORT
+        ).show()
+        handler.removeCallbacksAndMessages(null)
     }
 
     override fun onDestroy() {
         super.onDestroy()
-
         removeActivityUpdatesButtonHandler()
     }
+
+    fun broadcastActivity() {
+        var activityType:String
+        if(sensorReading - 9.8 > 2 && sensorReading - 9.8 < 7) {
+            activityType = "WALKING"
+        } else if(sensorReading - 9.8 >= 7) {
+            activityType = "RUNNING"
+        } else {
+            activityType = "STILL"
+        }
+        val intent = Intent(MainActivity.BROADCAST_DETECTED_ACTIVITY)
+        intent.putExtra("type", activityType)
+        LocalBroadcastManager.getInstance(this).sendBroadcast(intent)
+        Log.d("Broadcast", activityType)
+        handler.postDelayed({
+            broadcastActivity()
+        }, MainActivity.DETECTION_INTERVAL_IN_MILLISECONDS)
+    }
+    override fun onSensorChanged(event: SensorEvent?) {
+        if (event != null) {
+            sensorReading = sqrt(Math.pow(event.values[0].toDouble(), 2.0).toFloat()
+                    + Math.pow(event.values[1].toDouble(), 2.0).toFloat()
+                    + Math.pow(event.values[2].toDouble(), 2.0).toFloat())
+        }
+    }
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+    }
 }
+
