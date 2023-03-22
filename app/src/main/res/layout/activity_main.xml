@@ -18,14 +18,13 @@
 
     <pl.droidsonroids.gif.GifImageView
         android:id="@+id/activitygif"
-        android:layout_width="228dp"
-        android:layout_height="257dp"
-        android:layout_marginTop="136dp"
+        android:layout_width="255dp"
+        android:layout_height="288dp"
+        android:layout_marginTop="116dp"
         android:background="@drawable/border"
         android:src="@drawable/standing"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -35,45 +34,51 @@
         android:layout_height="wrap_content"
         android:layout_margin="24dp"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="24dp"
 
+        android:layout_marginEnd="8dp"
         android:textAllCaps="true"
         android:textColor="@color/purple_200"
         android:textSize="18dp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/txt_confidence"
+        app:layout_constraintBottom_toTopOf="@+id/txt_quote"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/activitygif" />
 
     <TextView
-        android:id="@+id/txt_confidence"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/txt_quote"
+        android:layout_width="371dp"
+        android:layout_height="85dp"
         android:layout_gravity="center_horizontal"
         android:layout_margin="24dp"
-        android:layout_marginStart="8dp"
+        android:background="@drawable/border2"
+        android:fontFamily="@font/amatica_sc_bold"
+        android:text="You may not be there yet, but you are closer than you were yesterday !"
+        android:textAlignment="center"
         android:textAllCaps="true"
-        android:textSize="14dp"
+        android:textColor="@color/black"
+        android:textSize="24dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.487"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.688" />
+        app:layout_constraintVertical_bias="0.708" />
 
     <Button
         android:id="@+id/btn_start_tracking"
+        style="@style/buttonStyling"
         android:layout_width="240dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="4dp"
         android:fontFamily="@font/amatica_sc_bold"
         android:text="Start Tracking"
-        style="@style/buttonStyling"
         app:layout_constraintBottom_toTopOf="@+id/btn_stop_tracking"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
@@ -85,11 +90,11 @@
         android:layout_alignParentBottom="true"
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
-        android:layout_marginBottom="44dp"
+        android:layout_marginBottom="36dp"
         android:text="Stop Tracking"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.503"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
