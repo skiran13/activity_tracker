@@ -6,7 +6,7 @@ import android.media.MediaPlayer
 import android.os.IBinder
 import android.provider.Settings
 
-//This service lets us play the background music when we start a new game
+//This service lets us play the background music when the detected user activity is "running"
 
 class BackgroundMusicService : Service() {
     lateinit var  player : MediaPlayer

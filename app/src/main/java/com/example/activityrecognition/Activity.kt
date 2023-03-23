@@ -1,5 +1,6 @@
 package com.example.activityrecognition
-
+//This class is represents an Activity instance and is used to store the attributes associated with an Activity so
+// that they can be passed to the INSERT Command of SQLite
 class Activity {
     var id: Int = 0
     var activity_name: String = ""

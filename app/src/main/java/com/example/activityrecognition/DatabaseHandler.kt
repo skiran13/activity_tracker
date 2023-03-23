@@ -6,6 +6,8 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import android.widget.Toast
 
+//Creating a Database handler for handling SQLite functionalities
+
 val DATABASE_NAME = "ActivityDB"
 val TABLE_NAME = "ActivityData"
 val COL_ID = "id"
@@ -15,6 +17,7 @@ val COL_TIME = "start_time"
 val COL_DURATION = "duration"
 
 class DatabaseHandler(var context: Context): SQLiteOpenHelper(context, DATABASE_NAME, null, 1) {
+//    Creates the table in sqlite with the specified columns
     override fun onCreate(db: SQLiteDatabase?) {
         val createTable = "CREATE TABLE "+ TABLE_NAME + "(" +
                 COL_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
@@ -29,7 +32,7 @@ class DatabaseHandler(var context: Context): SQLiteOpenHelper(context, DATABASE_
     override fun onUpgrade(p0: SQLiteDatabase?, p1: Int, p2: Int) {
         TODO("Not yet implemented")
     }
-
+//    Inserts the data by fetching the attributes of the Activity instance which is being passed to the method
     fun insertData(activity: Activity){
         val db = this.writableDatabase
         var cv = ContentValues()

@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var timeFormatter: SimpleDateFormat
     private lateinit var dateFormatter: SimpleDateFormat
     private lateinit var db: DatabaseHandler
-    private var lastActivity = ""
+    private var lastActivity = "" // TO keep track of the last activity that the user performed
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,12 +91,13 @@ class MainActivity : AppCompatActivity() {
 
         Log.d(TAG, "User activity: $label")
 
+//Once the activity type is detected,  the respective images for that activity are displayed and the actions associated with that activities are performed
 
         if (label != "Unknown") {
             activityGif.visibility = View.INVISIBLE
             when(type) {
                 "RUNNING" -> {
-                    startService(audio)
+                    startService(audio)  // Music starts playing when the user is running
                     activityGif.setBackgroundResource(R.drawable.border)
                     activityGif.setImageResource(R.drawable.run)
                     activityGif.visibility = View.VISIBLE
@@ -157,6 +158,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+//    This method is called every time the user activity changes
+//    The duration of the previous activity is calculated, the activity details are fetched from the activityData Array List and inserted into the sqlite table
+//    The duration of the last activity is displayed in the toast
+//    The details of the current activity are added to the ActivityData List
     private fun onActivityChange(activityData: ArrayList<String>, activity_name: String, stop: Boolean = false) {
         val current = Calendar.getInstance()
         timeFormatter = SimpleDateFormat(patternTime, Locale.getDefault())
@@ -176,7 +181,7 @@ class MainActivity : AppCompatActivity() {
                 "You were $act for $durationMinutes mins, $remainingSeconds seconds",
                 Toast.LENGTH_SHORT
             ).show()
-            // ADD DURATION TO ACTIVITY DATA AND PUSH IT TO SQLITE
+
             var activity = Activity(
                 activityData[0].toString(),
                 activityData[1].toString(),
@@ -208,13 +213,13 @@ class MainActivity : AppCompatActivity() {
 
         LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver)
     }
-
+    // The device starts tracking the user's motion once this method is called
     private fun startTracking() {
         val intent = Intent(this, BackgroundDetectedActivitiesService::class.java)
         startService(intent)
         Log.d("STAT","tracking started")
     }
-
+    // The device stops tracking the user's motion once this method is called and saves the last activity's data in the table
     private fun stopTracking() {
         val intent = Intent(this, BackgroundDetectedActivitiesService::class.java)
         stopService(intent)
