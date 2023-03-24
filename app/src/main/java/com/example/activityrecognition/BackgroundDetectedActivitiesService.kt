@@ -15,7 +15,7 @@ import android.widget.Toast
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import kotlin.math.sqrt
 
-
+//This service is used to detect the sensor movements and broadcast the activity performed by the user to main activity
 @Suppress("DEPRECATION", "UNREACHABLE_CODE")
 class BackgroundDetectedActivitiesService :Service(), SensorEventListener {
 
@@ -30,7 +30,7 @@ class BackgroundDetectedActivitiesService :Service(), SensorEventListener {
             return this@BackgroundDetectedActivitiesService
         }
     }
-
+//On creation of the service we initialize the sensors and sensor manager and start the broadcast servicve
     override fun onCreate() {
         super.onCreate()
         Log.d("BDAS","created")
@@ -49,7 +49,7 @@ class BackgroundDetectedActivitiesService :Service(), SensorEventListener {
     }
 
     override fun onBind(p0: Intent?): IBinder = MyBinder()
-
+//This function shows a toast whenever we start activity tracking
     private fun requestActivityUpdatesButtonHandler() {
 
         mSensorManager.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_NORMAL)
@@ -60,7 +60,7 @@ class BackgroundDetectedActivitiesService :Service(), SensorEventListener {
         )
             .show()
     }
-
+//This function shows a toast whenever we stop activity tracking
     private fun removeActivityUpdatesButtonHandler() {
         mSensorManager.unregisterListener(this)
         handlerBool = false
@@ -76,7 +76,7 @@ class BackgroundDetectedActivitiesService :Service(), SensorEventListener {
         super.onDestroy()
         removeActivityUpdatesButtonHandler()
     }
-
+//This function is used to broadcast the respective activity based on the sensor threshold that is set by us
     fun broadcastActivity() {
         var activityType:String
         if(sensorReading - 9.8 > 2 && sensorReading - 9.8 < 7) {

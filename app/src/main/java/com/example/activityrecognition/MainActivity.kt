@@ -67,7 +67,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-
     }
 
     private fun handleUserActivity(type: String) {
@@ -199,7 +198,7 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-
+//Every time the app resumes, we listen for the broadcast from other activities
     override fun onResume() {
         super.onResume()
 
@@ -207,7 +206,7 @@ class MainActivity : AppCompatActivity() {
             IntentFilter(BROADCAST_DETECTED_ACTIVITY)
         )
     }
-
+//Every time the app pauses, we stop listening for the broadcast from other activities
     override fun onPause() {
         super.onPause()
 
